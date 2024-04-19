@@ -11,8 +11,8 @@
         
         
 # $ python - m unittest test_port1
-# class Test():
+# class Test(unittest.TestCase):
 #     @unittest.skip("Not done yet")
 #         def test():
 #             pass
-    # @unittest.fail("Write this test!")
+#     @unittest.fail("Write this test!")

@@ -1,0 +1,17 @@
+@startuml
+class Car {
+  - make: String
+  - model: String
+  + startEngine()
+  + stopEngine()
+}
+
+class Engine {
+  - cylinders: int
+  - fuelType: String
+  + start()
+  + stop()
+}
+
+Car -> Engine : has
+@enduml

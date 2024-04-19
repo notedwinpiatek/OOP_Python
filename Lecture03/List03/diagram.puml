@@ -1,0 +1,17 @@
+@startuml
+class Employee{
+    - name: string
+    - age: int
+    - salary: int
+    + email: string
+    # emploeeID: int
+    + get_employeeID()
+
+}
+class Manager{
+    + gender: string
+    - phone_number: int
+
+}
+Employee -> Manager: has
+@enduml

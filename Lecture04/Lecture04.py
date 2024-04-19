@@ -16,3 +16,10 @@
 #         def test():
 #             pass
 #     @unittest.fail("Write this test!")
+
+lst = [1, 2, 3, 4, 5, 6]
+
+def avgTest(lst):
+    avg = sum(lst)/len(lst)
+    return avg
+print(avgTest(lst))

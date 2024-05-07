@@ -1,5 +1,3 @@
-import os
-os.environ['SDL_AUDIODRIVER'] = 'dsp'
 import pygame
 from sys import exit
 

@@ -33,7 +33,12 @@ while True:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 player_surface = pygame.image.load('graphics/Player/jump.png').convert_alpha()
-                player_gravity = -20
+                if player_rectangle.bottom >= 300:
+                    player_gravity = -20
+        if event.type == pygame.MOUSEBUTTONDOWN:
+                player_surface = pygame.image.load('graphics/Player/jump.png').convert_alpha()
+                if player_rectangle.bottom >= 300:
+                    player_gravity = -20
         # if event.type == pygame.KEYUP:
         #     if event.key == pygame.K_SPACE:
         #         player_surface = pygame.image.load('graphics/Player/player_walk_1.png').convert_alpha()
@@ -51,8 +56,8 @@ while True:
 
     player_gravity +=1
     player_rectangle.y += player_gravity
-    if player_rectangle.y >= 220:
-        player_rectangle.y = 220
+    if player_rectangle.bottom > 300:
+        player_rectangle.bottom = 300
         player_gravity = 0
         player_surface = pygame.image.load('graphics/Player/player_walk_1.png').convert_alpha()
 

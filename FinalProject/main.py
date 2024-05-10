@@ -1,4 +1,3 @@
-from typing import Any
 import pygame
 from sys import exit
 from random import randint, choice
@@ -101,6 +100,7 @@ def collisions(player,obstacles):
 
 def collision_sprite():
     if pygame.sprite.spritecollide(player.sprite,obsticle_group,False):
+        obsticle_group.empty()
         return False
     else: return True
 

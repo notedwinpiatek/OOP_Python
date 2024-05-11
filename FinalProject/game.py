@@ -17,6 +17,12 @@ class Player(pygame.sprite.Sprite):
         self.image = self.player_walk[self.player_index]
         self.rect = self.image.get_rect(midbottom = (400,562))
         self.gravity = 0
+        
+    def apply_gravity(self):
+        self.gravity += 1
+        self.rect.y += self.gravity
+        if self.rect.bottom >= 300:
+            self.rect.bottom = 300
          
 # Game window
 pygame.init()
@@ -62,6 +68,11 @@ while True:
         if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     game_active = True
+    # Space Jump
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                if player.bottom >= 300:
+                    player_gravity = -20
         player.draw(screen)
     else:
         screen.fill('#c0e8ec')

@@ -15,11 +15,15 @@ class Player(pygame.sprite.Sprite):
         self.image = self.player_walk[self.player_index]
         self.rect = self.image.get_rect(midbottom = (200,300))
         self.gravity = 0
+        
+        self.jump_sound = pygame.mixer.Sound('audio/jump.mp3')
+        self.jump_sound.set_volume(0.2)
 
     def player_input(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE] and self.rect.bottom >= 300:
             self.gravity = -20
+            self.jump_sound.play()
 
     def apply_gravity(self):
         self.gravity += 1
@@ -103,7 +107,7 @@ def collision_sprite():
         obsticle_group.empty()
         return False
     else: return True
-
+ 
 def player_animation():
     global player_surface,player_index
     if player_rectangle.bottom < 300:
@@ -117,6 +121,9 @@ def player_animation():
 # initialization
 pygame.init()
 pygame.display.set_caption('Bounce King')
+bg_music = pygame.mixer.Sound('audio/music.wav')
+bg_music.set_volume(0.01 )
+bg_music.play(loops = -1)
 
 # variables
 screen = pygame.display.set_mode((800, 400))
@@ -251,25 +258,16 @@ while True:
         score = display_time()
 
         # player
-        # player_gravity +=1
-        # player_rectangle.y += player_gravity
-        # if player_rectangle.bottom > 300:
-        #     player_rectangle.bottom = 300
-        #     player_gravity = 0
-        # player_animation()
-        # screen.blit(player_surface, player_rectangle)
         player.draw(screen)
         player.update()
 
         obsticle_group.draw(screen)
         obsticle_group.update()
         
-        # # Obsticle Movement
-        # obsticle_rect_list = obsticle_movement(obsticle_rect_list)
+        # Obsticle Movement
 
         # # Collisions
         game_active = collision_sprite()
-        # game_active = collisions(player_rectangle, obsticle_rect_list)
 
 
 

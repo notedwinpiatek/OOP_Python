@@ -234,11 +234,6 @@ while True:
             # Timer
             if event.type == obsticle_timer:
                 obsticle_group.add(Obsticle(choice(['fly','snail','snail','snail'])))
-                # if randint(0,2):
-                #     obsticle_rect_list.append(snail_surface.get_rect(midbottom = (randint(900,1100),300)))
-                # else:
-                #     obsticle_rect_list.append(fly_surface.get_rect(midbottom = (randint(900,1100),210)))
-
         else:   
             # game restart
             if event.type == pygame.KEYDOWN:

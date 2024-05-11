@@ -28,6 +28,9 @@ htp_rect = how_to_play.get_rect(topleft = (0,0))
 game_active = False
 clock = pygame.time.Clock()
 
+# Ground
+ground = pygame.image.load('Graphics/ground.png').convert_alpha()
+
 # Groups
 player = pygame.sprite.GroupSingle()
 player.add(Player())
@@ -44,16 +47,21 @@ while True:
             if event.key == pygame.K_ESCAPE:
                 pygame.quit()
                 exit()
+        # Starting the game
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:
+                game_active = True
         # Game window
         screen.fill('#b0ceff')
         screen.blit(how_to_play, htp_rect)
-        player.draw(screen)
         
     if game_active:
         if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     game_active = True
-                    start_time = int(pygame.time.get_ticks()/1000)
+        player.draw(screen)
+    else:
+        screen.fill('#c0e8ec')
     
     
     pygame.display.update()

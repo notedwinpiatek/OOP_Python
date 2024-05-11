@@ -15,7 +15,7 @@ class Player(pygame.sprite.Sprite):
         self.player_jump = pygame.image.load('graphics/Player/jump.png').convert_alpha()
         
         self.image = self.player_walk[self.player_index]
-        self.rect = self.image.get_rect(midbottom = (400,550))
+        self.rect = self.image.get_rect(midbottom = (400,562))
         self.gravity = 0
          
 # Game window
@@ -28,8 +28,9 @@ htp_rect = how_to_play.get_rect(topleft = (0,0))
 game_active = False
 clock = pygame.time.Clock()
 
-# Ground
-ground = pygame.image.load('Graphics/ground.png').convert_alpha()
+# Background
+ground_surf = pygame.image.load('Graphics/ground.png').convert_alpha()
+ground_rect = ground_surf.get_rect(topleft = (0,0))
 
 # Groups
 player = pygame.sprite.GroupSingle()
@@ -53,7 +54,9 @@ while True:
                 game_active = True
         # Game window
         screen.fill('#b0ceff')
+        screen.blit(ground_surf, ground_rect)
         screen.blit(how_to_play, htp_rect)
+        
         
     if game_active:
         if event.type == pygame.KEYDOWN:

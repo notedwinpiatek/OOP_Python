@@ -14,6 +14,7 @@ class Player(pygame.sprite.Sprite):
         player_walk2 = pygame.image.load('graphics/Player/player_walk_2.png').convert_alpha()
         self.player_walk = [player_walk1,player_walk2]
         
+    
         player_flip1 = pygame.transform.flip(player_walk1, True, False)
         player_flip2 = pygame.transform.flip(player_walk2, True, False)
         self.player_walk_flip = [player_flip1,player_flip2]
@@ -23,23 +24,33 @@ class Player(pygame.sprite.Sprite):
         self.image = self.player_standing
         self.rect = self.image.get_rect(midbottom = (400,562))
         self.player_gravity = 0
+        self.moving = False
         
     def player_input(self):
         key = pygame.key.get_pressed()
         if key[pygame.K_SPACE] and self.rect.bottom >= 562:
             self.player_gravity = -20
+            
         if key[pygame.K_a] and self.rect.x > 0:
             self.rect.x -= 5
             self.walk_animation_left()
-        if key[pygame.K_d] and self.rect.x < 800:
+            self.moving = True
+        elif key[pygame.K_d] and self.rect.x < 800:
             self.rect.x += 5
             self.walk_animation_right()
+            self.moving = True
+        else:
+            self.moving = False
     
     def apply_gravity(self):
         self.player_gravity += 1
         self.rect.y += self.player_gravity
         if self.rect.bottom >= 562:
             self.rect.bottom = 562
+    
+    def jump_animation(self):
+        if self.rect.bottom < 562:
+            self.image = self.player_jump
     
     def walk_animation_right(self):
         self.player_index += 0.2
@@ -56,6 +67,9 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         self.player_input()
         self.apply_gravity()
+        self.jump_animation()
+        if not self.moving and self.rect.bottom == 562:
+            self.image = self.player_standing
          
 # Game window
 pygame.init()

@@ -19,12 +19,16 @@ class Player(pygame.sprite.Sprite):
         player_flip2 = pygame.transform.flip(player_walk2, True, False)
         self.player_walk_flip = [player_flip1,player_flip2]
         
+        self.player_jump_flip = pygame.transform.flip(self.player_jump, True, False)
+        
+        
         self.player_index = 0
         self.player_surface = self.player_walk[self.player_index]
         self.image = self.player_standing
         self.rect = self.image.get_rect(midbottom = (400,562))
         self.player_gravity = 0
         self.moving = False
+        self.direction = "right"
         
     def player_input(self):
         key = pygame.key.get_pressed()
@@ -35,10 +39,12 @@ class Player(pygame.sprite.Sprite):
             self.rect.x -= 5
             self.walk_animation_left()
             self.moving = True
+            self.direction = "left"
         elif key[pygame.K_d] and self.rect.x < 800:
             self.rect.x += 5
             self.walk_animation_right()
             self.moving = True
+            self.direction = "right"
         else:
             self.moving = False
     
@@ -50,7 +56,12 @@ class Player(pygame.sprite.Sprite):
     
     def jump_animation(self):
         if self.rect.bottom < 562:
-            self.image = self.player_jump
+            if self.moving and self.direction == "right":
+                self.image = self.player_jump
+            elif self.moving and self.direction == "left":
+                self.image = self.player_jump_flip
+    
+
     
     def walk_animation_right(self):
         self.player_index += 0.2

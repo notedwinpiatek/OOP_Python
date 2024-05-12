@@ -4,25 +4,14 @@ from random import randint, choice
 
 # Player Class
 class Player(pygame.sprite.Sprite):
-    
     def __init__(self):
         super().__init__()
-        player_walk1 = pygame.image.load('Graphics/Player/player_walk_1.png').convert_alpha()
-        player_walk2 = pygame.image.load('Graphics/Player/player_walk_2.png').convert_alpha()
-        self.player_walk = [player_walk1,player_walk2]
-        self.player_index = 0
-        self.player_surface = self.player_walk[self.player_index]
-        self.player_jump = pygame.image.load('graphics/Player/jump.png').convert_alpha()
-        
-        self.image = self.player_walk[self.player_index]
+        self.player_standing = pygame.image.load('Graphics/Player/player_stand.png').convert_alpha()
+        self.player_jump = pygame.image.load('Graphics/Player/jump.png').convert_alpha()
+        self.image = self.player_standing
         self.rect = self.image.get_rect(midbottom = (400,562))
-        self.gravity = 0
-        
-    def apply_gravity(self):
-        self.gravity += 1
-        self.rect.y += self.gravity
-        if self.rect.bottom >= 300:
-            self.rect.bottom = 300
+        self.player_gravity = 0
+    
          
 # Game window
 pygame.init()
@@ -71,9 +60,10 @@ while True:
     # Space Jump
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                if player.bottom >= 300:
+                if player.bottom >= 562:
                     player_gravity = -20
         player.draw(screen)
+        player.update()
     else:
         screen.fill('#c0e8ec')
     

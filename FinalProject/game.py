@@ -2,6 +2,8 @@ import pygame
 from sys import exit
 from random import randint, choice
 
+pygame.init()
+
 # Player Class
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -81,16 +83,25 @@ class Player(pygame.sprite.Sprite):
         self.jump_animation()
         if not self.moving and self.rect.bottom == 562:
             self.image = self.player_standing
-         
+class Platforms(pygame.sprite.Sprite):
+    def __init__(self):
+        self.platform = pygame.image.load('Graphics/platforms/wood.png').convert_alpha()
+# variables
+game_active = False
+clock = pygame.time.Clock()
+main_font = pygame.font.Font('font/Minecraft.ttf', 35)
+
+
 # Game window
-pygame.init()
 screen = pygame.display.set_mode((800,600))
 how_to_play = pygame.image.load('Graphics/how_to_play.png').convert_alpha()
 htp_rect = how_to_play.get_rect(topleft = (0,0))
 
-# variables
-game_active = False
-clock = pygame.time.Clock()
+pygame.display.set_caption('Bounce King')
+
+main_text = main_font.render(f'HIT ENTER TO START', False, 'White')
+main_rect = main_text.get_rect(center = (400, 300))
+
 
 # Background
 ground_surf = pygame.image.load('Graphics/ground.png').convert_alpha()
@@ -132,6 +143,7 @@ while True:
         player.update()
     else:
         screen.fill('#c0e8ec')
+        screen.blit(main_text, main_rect)
     
     
     pygame.display.update()

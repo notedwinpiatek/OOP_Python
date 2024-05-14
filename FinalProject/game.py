@@ -4,7 +4,12 @@ from random import randint, choice
 
 pygame.init()
 
-# Player Class
+# variables
+game_active = False
+clock = pygame.time.Clock()
+main_font = pygame.font.Font('font/Minecraft.ttf', 35)
+
+
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -16,6 +21,10 @@ class Player(pygame.sprite.Sprite):
         player_walk2 = pygame.image.load('graphics/Player/player_walk_2.png').convert_alpha()
         self.player_walk = [player_walk1,player_walk2]
         
+        self.prev_x = 0
+        self.prev_y = 0
+    
+        self.ground_level = 562
     
         player_flip1 = pygame.transform.flip(player_walk1, True, False)
         player_flip2 = pygame.transform.flip(player_walk2, True, False)
@@ -34,15 +43,18 @@ class Player(pygame.sprite.Sprite):
         
     def player_input(self):
         key = pygame.key.get_pressed()
-        if key[pygame.K_SPACE] and self.rect.bottom >= 562:
+        if key[pygame.K_SPACE] and self.rect.bottom >= self.ground_level:
             self.player_gravity = -20
             
         if key[pygame.K_a] and self.rect.x > 0:
+            self.prev_x = self.rect.x
             self.rect.x -= 5
             self.walk_animation_left()
             self.moving = True
             self.direction = "left"
+            
         elif key[pygame.K_d] and self.rect.x < 800:
+            self.prev_x = self.rect.x
             self.rect.x += 5
             self.walk_animation_right()
             self.moving = True
@@ -52,12 +64,13 @@ class Player(pygame.sprite.Sprite):
     
     def apply_gravity(self):
         self.player_gravity += 1
+        self.prev_y = self.rect.y
         self.rect.y += self.player_gravity
-        if self.rect.bottom >= 562:
-            self.rect.bottom = 562
+        if self.rect.bottom >= self.ground_level:
+            self.rect.bottom = self.ground_level
     
     def jump_animation(self):
-        if self.rect.bottom < 562:
+        if self.rect.bottom < self.ground_level:
             if self.moving and self.direction == "right":
                 self.image = self.player_jump
             elif self.moving and self.direction == "left":
@@ -76,20 +89,40 @@ class Player(pygame.sprite.Sprite):
         if self.player_index >= len(self.player_walk_flip):
             self.player_index = 0
         self.image = self.player_walk_flip[int(self.player_index)]
+    
+    def collision(self):
+        collision_list = pygame.sprite.spritecollide(player.sprite, platforms, False)
+        if collision_list:
+            for sprite in collision_list:
+                # Collision form the top
+                if self.rect.bottom >= sprite.rect.top and self.prev_y < self.rect.y:
+                    self.rect.bottom = sprite.rect.top
+                    self.player_gravity = 0
+                    self.ground_level = sprite.rect.top
+                # Collision form the right
+                elif self.rect.left <= sprite.rect.right and self.prev_x > self.rect.x:
+                    self.rect.x = sprite.rect.right  
+                # Collision form the left
+                elif self.rect.right >= sprite.rect.left and self.prev_x < self.rect.x:
+                    self.rect.left = sprite.rect.left - self.rect.width
+        else: self.ground_level = 562
                 
     def update(self):
         self.player_input()
+        self.collision()
         self.apply_gravity()
         self.jump_animation()
         if not self.moving and self.rect.bottom == 562:
             self.image = self.player_standing
+
 class Platforms(pygame.sprite.Sprite):
     def __init__(self):
-        self.platform = pygame.image.load('Graphics/platforms/wood.png').convert_alpha()
-# variables
-game_active = False
-clock = pygame.time.Clock()
-main_font = pygame.font.Font('font/Minecraft.ttf', 35)
+        super().__init__()
+        wood = pygame.image.load('Graphics/platforms/wood.png').convert_alpha()
+        self.image = pygame.transform.scale(wood, (wood.get_width()//5, wood.get_height()//5))
+        self.rect = self.image.get_rect(topleft = (randint(0,600),500))        
+    
+    
 
 
 # Game window
@@ -110,6 +143,8 @@ ground_rect = ground_surf.get_rect(topleft = (0,0))
 # Groups
 player = pygame.sprite.GroupSingle()
 player.add(Player())
+platforms = pygame.sprite.Group()
+platforms.add(Platforms())
 
 
 # Main Loop
@@ -140,6 +175,7 @@ while True:
         
         # Space Jump
         player.draw(screen)
+        platforms.draw(screen)
         player.update()
     else:
         screen.fill('#c0e8ec')

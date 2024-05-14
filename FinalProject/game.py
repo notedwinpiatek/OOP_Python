@@ -90,40 +90,28 @@ class Player(pygame.sprite.Sprite):
             self.player_index = 0
         self.image = self.player_walk_flip[int(self.player_index)]
     
-    # def collision(self):
-    # # Check for collisions between the player and platforms
-    #     collision_list = pygame.sprite.spritecollide(self, platforms, False)
-    #     if collision_list:
-    #         # Iterate over all collided platforms
-    #         for platform in collision_list:
-    #             # Check if the player is above the platform
-    #             if self.rect.bottom <= platform.rect.centery:
-    #                 # Player is above the platform, allow jumping
-    #                 self.ground_level = self.rect.bottom
-    #             else:
-    #                 # Player is on or below the platform, adjust position
-    #                 self.rect.bottom = platform.rect.top
-    #                 self.player_gravity = 0
-    #     else:
-    #         # No collisions, set ground level to default
-    #         self.ground_level = 562
 
     def collision(self):
         collision_list = pygame.sprite.spritecollide(player.sprite, platforms, False)
         if collision_list:
             for sprite in collision_list:
-                # Collision form the top
+                # Collision from the top
                 if self.rect.bottom >= sprite.rect.top and self.prev_y < self.rect.y:
                     self.rect.bottom = sprite.rect.top
-                    # self.player_gravity = 0
-                    self.ground_level = self.rect.bottom
-                # Collision form the right
+                    self.ground_level = sprite.rect.top
+                # Collision from the bottom
+                elif self.rect.top <= sprite.rect.bottom and self.prev_y > self.rect.y:
+                    self.rect.top = sprite.rect.bottom
+                    self.player_gravity = 0
+                # Collision from the right
                 elif self.rect.left <= sprite.rect.right and self.prev_x > self.rect.x:
                     self.rect.x = sprite.rect.right  
-                # Collision form the left
+                # Collision from the left
                 elif self.rect.right >= sprite.rect.left and self.prev_x < self.rect.x:
                     self.rect.left = sprite.rect.left - self.rect.width
-        else: self.ground_level = 562
+        else:
+            self.ground_level = 562
+
                 
     def update(self):
         self.player_input()
@@ -138,10 +126,9 @@ class Platforms(pygame.sprite.Sprite):
         super().__init__()
         wood = pygame.image.load('Graphics/platforms/wood.png').convert_alpha()
         self.image = pygame.transform.scale(wood, (wood.get_width()//5, wood.get_height()//5))
-        self.rect = self.image.get_rect(topleft = (randint(0,600),400))        
+        self.rect = self.image.get_rect(topleft = (randint(0, 600), randint(300, 400)))        
     
     
-
 
 # Game window
 screen = pygame.display.set_mode((800,600))
@@ -158,11 +145,15 @@ main_rect = main_text.get_rect(center = (400, 300))
 ground_surf = pygame.image.load('Graphics/ground.png').convert_alpha()
 ground_rect = ground_surf.get_rect(topleft = (0,0))
 
+# Timers
+platform_timer = pygame.USEREVENT +1
+pygame.time.set_timer(platform_timer, 1000)
+
 # Groups
 player = pygame.sprite.GroupSingle()
 player.add(Player())
 platforms = pygame.sprite.Group()
-platforms.add(Platforms())
+
 
 
 # Main Loop
@@ -185,16 +176,21 @@ while True:
             if event.key == pygame.K_RETURN:
                 game_active = True
         
+        if event.type == platform_timer:
+            platforms.add(Platforms())
+        
     if game_active:
         # Game window
         screen.fill('#b0ceff')
         screen.blit(ground_surf, ground_rect)
         screen.blit(how_to_play, htp_rect)
         
-        # Space Jump
+        # player
         player.draw(screen)
-        platforms.draw(screen)
         player.update()
+        
+        # platforms
+        platforms.draw(screen)
     else:
         screen.fill('#c0e8ec')
         screen.blit(main_text, main_rect)

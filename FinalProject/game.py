@@ -36,7 +36,7 @@ class Player(pygame.sprite.Sprite):
         self.player_index = 0
         self.player_surface = self.player_walk[self.player_index]
         self.image = self.player_standing
-        self.rect = self.image.get_rect(midbottom = (400,562))
+        self.rect = self.image.get_rect(midbottom = (400,self.ground_level))
         self.player_gravity = 0
         self.moving = False
         self.direction = "right"
@@ -53,7 +53,7 @@ class Player(pygame.sprite.Sprite):
             self.moving = True
             self.direction = "left"
             
-        elif key[pygame.K_d] and self.rect.x < 800:
+        elif key[pygame.K_d] and self.rect.x < 800 - self.rect.width:
             self.prev_x = self.rect.x
             self.rect.x += 5
             self.walk_animation_right()
@@ -67,7 +67,7 @@ class Player(pygame.sprite.Sprite):
         self.prev_y = self.rect.y
         self.rect.y += self.player_gravity
         if self.rect.bottom >= self.ground_level:
-            self.rect.bottom = self.ground_level
+            self.rect.bottom = self.ground_level + 1
     
     def jump_animation(self):
         if self.rect.bottom < self.ground_level:
@@ -90,6 +90,24 @@ class Player(pygame.sprite.Sprite):
             self.player_index = 0
         self.image = self.player_walk_flip[int(self.player_index)]
     
+    # def collision(self):
+    # # Check for collisions between the player and platforms
+    #     collision_list = pygame.sprite.spritecollide(self, platforms, False)
+    #     if collision_list:
+    #         # Iterate over all collided platforms
+    #         for platform in collision_list:
+    #             # Check if the player is above the platform
+    #             if self.rect.bottom <= platform.rect.centery:
+    #                 # Player is above the platform, allow jumping
+    #                 self.ground_level = self.rect.bottom
+    #             else:
+    #                 # Player is on or below the platform, adjust position
+    #                 self.rect.bottom = platform.rect.top
+    #                 self.player_gravity = 0
+    #     else:
+    #         # No collisions, set ground level to default
+    #         self.ground_level = 562
+
     def collision(self):
         collision_list = pygame.sprite.spritecollide(player.sprite, platforms, False)
         if collision_list:
@@ -97,8 +115,8 @@ class Player(pygame.sprite.Sprite):
                 # Collision form the top
                 if self.rect.bottom >= sprite.rect.top and self.prev_y < self.rect.y:
                     self.rect.bottom = sprite.rect.top
-                    self.player_gravity = 0
-                    self.ground_level = sprite.rect.top
+                    # self.player_gravity = 0
+                    self.ground_level = self.rect.bottom
                 # Collision form the right
                 elif self.rect.left <= sprite.rect.right and self.prev_x > self.rect.x:
                     self.rect.x = sprite.rect.right  
@@ -112,7 +130,7 @@ class Player(pygame.sprite.Sprite):
         self.collision()
         self.apply_gravity()
         self.jump_animation()
-        if not self.moving and self.rect.bottom == 562:
+        if not self.moving and self.rect.bottom == self.ground_level +1:
             self.image = self.player_standing
 
 class Platforms(pygame.sprite.Sprite):
@@ -120,7 +138,7 @@ class Platforms(pygame.sprite.Sprite):
         super().__init__()
         wood = pygame.image.load('Graphics/platforms/wood.png').convert_alpha()
         self.image = pygame.transform.scale(wood, (wood.get_width()//5, wood.get_height()//5))
-        self.rect = self.image.get_rect(topleft = (randint(0,600),500))        
+        self.rect = self.image.get_rect(topleft = (randint(0,600),400))        
     
     
 

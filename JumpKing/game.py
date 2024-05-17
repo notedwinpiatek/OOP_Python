@@ -24,7 +24,7 @@ class Player(pygame.sprite.Sprite):
         self.prev_x = 0
         self.prev_y = 0
     
-        self.ground_level = 562
+        self.ground_level = 600
     
         player_flip1 = pygame.transform.flip(player_walk1, True, False)
         player_flip2 = pygame.transform.flip(player_walk2, True, False)
@@ -36,7 +36,7 @@ class Player(pygame.sprite.Sprite):
         self.player_index = 0
         self.player_surface = self.player_walk[self.player_index]
         self.image = self.player_standing
-        self.rect = self.image.get_rect(midbottom = (400,self.ground_level))
+        self.rect = self.image.get_rect(midbottom = (400, 0))
         self.player_gravity = 0
         self.moving = False
         self.direction = "right"
@@ -110,7 +110,7 @@ class Player(pygame.sprite.Sprite):
                 elif self.rect.right >= sprite.rect.left and self.prev_x < self.rect.x:
                     self.rect.left = sprite.rect.left - self.rect.width
         else:
-            self.ground_level = 562
+            self.ground_level = 600
 
                 
     def update(self):
@@ -126,8 +126,12 @@ class Platforms(pygame.sprite.Sprite):
         super().__init__()
         wood = pygame.image.load('Graphics/platforms/wood.png').convert_alpha()
         self.image = pygame.transform.scale(wood, (wood.get_width()//5, wood.get_height()//5))
-        self.rect = self.image.get_rect(topleft = (randint(0, 600), randint(300, 400)))        
-    
+        if len(platforms) == 0:
+            self.rect = self.image.get_rect(midtop = (400,562))
+        elif len(platforms) == range(0,2):
+            self.rect = self.image.get_rect(topleft = (randint(0, 600), 500))
+        else:
+            self.rect = self.image.get_rect(topleft = (randint(0, 600), randint(100, 400)))
     
 
 # Game window
@@ -156,6 +160,7 @@ platforms = pygame.sprite.Group()
 
 
 
+
 # Main Loop
 while True:
     for event in pygame.event.get():
@@ -176,13 +181,19 @@ while True:
             if event.key == pygame.K_RETURN:
                 game_active = True
         
-        if event.type == platform_timer:
+        if event.type == platform_timer and game_active:
+            # Check if the number of platforms exceeds the maximum limit
+            if len(platforms) >= 5:
+                # Remove one of the existing platforms
+                platform_to_remove = choice(platforms.sprites())
+                platforms.remove(platform_to_remove)
+            # Add a new platform
             platforms.add(Platforms())
         
     if game_active:
         # Game window
         screen.fill('#b0ceff')
-        screen.blit(ground_surf, ground_rect)
+        # screen.blit(ground_surf, ground_rect)
         screen.blit(how_to_play, htp_rect)
         
         # player
